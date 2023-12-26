@@ -1,4 +1,3 @@
-#importing the necessary libraries
 import pandas as pd
 import plotly.express as px
 import streamlit as st
@@ -8,9 +7,6 @@ import pymongo
 from googleapiclient.discovery import build
 from PIL import Image
 
-
-
-# SETTING PAGE CONFIGURATIONS
 icon = Image.open("Youtube_logo.png")
 st.set_page_config(page_title= "Youtube Data Harvesting and Warehousing | By Akash Jha",
                    page_icon= icon,
@@ -18,7 +14,6 @@ st.set_page_config(page_title= "Youtube Data Harvesting and Warehousing | By Aka
                    initial_sidebar_state= "expanded",
                    menu_items={'About': """# This app is created by *Akash Jha!*"""})
 
-# CREATING OPTION MENU
 with st.sidebar:
     selected = option_menu(None, ["Home","Extract and Transform","View"], 
                            icons=["house-door-fill","tools","card-text"],
@@ -30,11 +25,11 @@ with st.sidebar:
                                    "container" : {"max-width": "6000px"},
                                    "nav-link-selected": {"background-color": "#C80101"}})
 
-# Bridging a connection with MongoDB Atlas and Creating a new database(youtube_data)
+
 client = pymongo.MongoClient("mongodb://localhost:27017/")
 db = client['youtube_data']
 
-# CONNECTING WITH MYSQL DATABASE
+
 mydb = sql.connect(host="localhost",
                    user="root",
                    password="Deol1000%sexy",
@@ -42,12 +37,11 @@ mydb = sql.connect(host="localhost",
                   )
 mycursor = mydb.cursor(buffered=True)
 
-# BUILDING CONNECTION WITH YOUTUBE API
+
 api_key = "AIzaSyCkglXpsoXo7QjsLDBAL8mzCfX4YZzpdtg"
 youtube = build('youtube','v3',developerKey=api_key)
 
 
-# FUNCTION TO GET CHANNEL DETAILS
 def get_channel_details(channel_id):
     ch_data = []
     response = youtube.channels().list(part = 'snippet,contentDetails,statistics',
@@ -67,7 +61,7 @@ def get_channel_details(channel_id):
     return ch_data
 
 
-# FUNCTION TO GET VIDEO IDS
+
 def get_channel_videos(channel_id):
     video_ids = []
     # get Uploads playlist id
@@ -91,7 +85,6 @@ def get_channel_videos(channel_id):
     return video_ids
 
 
-# FUNCTION TO GET VIDEO DETAILS
 def get_video_details(v_ids):
     video_stats = []
     
@@ -120,7 +113,6 @@ def get_video_details(v_ids):
     return video_stats
 
 
-# FUNCTION TO GET COMMENT DETAILS
 def get_comments_details(v_id):
     comment_data = []
     try:
@@ -148,7 +140,6 @@ def get_comments_details(v_id):
     return comment_data
 
 
-# FUNCTION TO GET CHANNEL NAMES FROM MONGODB
 def channel_names():   
     ch_name = []
     for i in db.channel_details.find():
@@ -156,9 +147,8 @@ def channel_names():
     return ch_name
 
 
-# HOME PAGE
 if selected == "Home":
-    # Title Image
+  
     
     col1,col2 = st.columns(2,gap= 'medium')
     col1.markdown("## :blue[Domain] : Social Media")
@@ -170,11 +160,10 @@ if selected == "Home":
     col2.image("youtubeMain.png")
     
     
-# EXTRACT and TRANSFORM PAGE
 if selected == "Extract and Transform":
     tab1,tab2 = st.tabs(["$\huge EXTRACT $", "$\huge TRANSFORM $"])
     
-    # EXTRACT TAB
+
     with tab1:
         st.markdown("#    ")
         st.write("### Enter YouTube Channel_ID below :")
@@ -208,7 +197,7 @@ if selected == "Extract and Transform":
                 collections3.insert_many(comm_details)
                 st.success("Upload to MogoDB successful !!")
       
-    # TRANSFORM TAB
+  
     with tab2:     
         st.markdown("#   ")
         st.markdown("### Select a channel to begin Transformation to SQL")
@@ -254,7 +243,7 @@ if selected == "Extract and Transform":
             except:
                 st.error("Channel details already transformed!!")
             
-# VIEW PAGE
+
 if selected == "View":
     
     st.write("## :orange[Select any question to get Insights]")
